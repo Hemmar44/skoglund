@@ -13,8 +13,22 @@ require_once '../includes/user.php';
 
 
 
-$found_user = User::find_by_id(1);
-echo $found_user["username"];
+$record = User::find_by_id(1);
+$user = new User();
+echo $user->id = $record['id'];
+echo "<br/>";
+echo $user->username = $record["username"];
+echo "<br/>";
+echo $user->password = $record["password"];
+echo "<br/>";
+echo $user->first_name = $record["first_name"];
+echo "<br/>";
+echo $user->last_name = $record["last_name"];
+echo "<br/>";
+echo $user->full_name();
+
+
+
 
 echo "<hr/>";
 
