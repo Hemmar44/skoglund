@@ -19,18 +19,31 @@ public static function find_all() {
     
 public static function find_by_id($id=0){
         global $database;
-        $result_set = self::find_by_sql("SELECT * FROM users WHERE id={$id} LIMIT 1");
+        $result_array = self::find_by_sql("SELECT * FROM users WHERE id={$id} LIMIT 1");
         //$result_set = $database->query("SELECT * FROM users WHERE id={$id}");
-        $found = $database->fetch_array($result_set);
-        return $found;
+        return !empty($result_array) ? array_shift($result_array) : false;
+        
     }
     
 public static function find_by_sql($sql=""){
         global $database;
         $result_set = $database->query($sql);
-        return $result_set;
+        $object_array = array();
+        while($row = $database->fetch_array($result_set)){
+            $object_array[]= self::instantiate($row);
+        }
+       return $object_array;
     }
+
+public static function authenticate($username="", $password=""){
+    global $database;
+    //pomysl o escape string innym sposobem
     
+    $sql = "SELECT * FROM users WHERE username ='{$username}' AND password = '{$password}' LIMIT 1";
+    $result_array = self::find_by_sql($sql);
+    return !empty($result_array) ? array_shift($result_array) : false;
+}
+
 public function full_name(){
        if(isset($this->first_name) and isset($this->last_name)){
             return $this->first_name. " " . $this->last_name;
@@ -40,8 +53,8 @@ public function full_name(){
         }
      }
 
-private static function instatiate($record){
- //$object = new self;
+private static function instantiate($record){
+    $object = new self;
 //$object->id = $record['id'];
 //$object->username = $record["username"];
 //$object->password = $record["password"];
