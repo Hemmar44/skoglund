@@ -1,9 +1,9 @@
 <?php
 
-require_once '../../includes/database.php';
-require_once '../../includes/user.php';
-require_once '../../includes/functions.php';
-require_once '../../includes/session.php';
+require_once '../../includes/initialize.php';
+//require_once '../../includes/user.php';
+//require_once '../../includes/functions.php';
+//require_once '../../includes/session.php';
 
 if($session->is_logged_in()) {redirect_to("index.php");}
 
@@ -47,7 +47,7 @@ else{
     </div>
     <div id="main">
         <h2>Staff Login</h2>
-        <?php echo output_message($message);?>
+        <?php echo output_message($message);//nie kumam trzemu jest błąd?>
     </div>
     <form action="login.php" method="post">
         <table>

@@ -1,0 +1,7 @@
+<?php
+
+
+//getcwd(): Current Working directory
+
+echo getcwd()."<br/>"
+?>
