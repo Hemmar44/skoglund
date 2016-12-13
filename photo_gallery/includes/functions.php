@@ -21,5 +21,22 @@ function output_message($message=""){
     } else {
         return "";
     }
-}
+    }
+    
+    function log_action($action, $message=""){
+        $logfile = "../logs/logs.txt";
+        $new = file_exists($logfile) ? false : true;
+            if($handle = fopen($logfile, "a")){//append
+                $timestamp = strftime("%Y-%m-%d %H:%M:%S", time());
+                $content = "{$timestamp} | {$action}: {$message}\r\n";
+                fwrite($handle, $content);
+                fclose($handle);
+                //if($new){chmod($logfile,0755);}
+               
+                }
+            else {
+                    echo "Could not open log file for writing.";
+                }
+    }
+
 ?>

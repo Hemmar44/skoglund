@@ -13,6 +13,11 @@ class MySQLDatabase {
         $this->open_connection();
     }
     
+    function escape_string($value){
+        return $value = mysqli_real_escape_string($this->connection, $value);
+    }
+
+
     //open conection
     public function open_connection(){
         $this->connection = mysqli_connect(DB_SERVER, DB_USER, DB_PASS);

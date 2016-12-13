@@ -1,12 +1,13 @@
 <?php
 
-require_once '../../includes/initialize.php';
+require_once ("../../includes/initialize.php");
 //require_once '../../includes/user.php';
 //require_once '../../includes/functions.php';
 //require_once '../../includes/session.php';
 
-if($session->is_logged_in()) {redirect_to("index.php");}
 
+if($session->is_logged_in()) {redirect_to("index.php");}
+$message="";
 if(isset($_POST['submit'])){
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -17,6 +18,7 @@ if(isset($_POST['submit'])){
     
     if($found_user){
         $session->login($found_user);
+        log_action("Login", "{$found_user->username} logged in.");
         redirect_to("index.php");
     }
     else{
