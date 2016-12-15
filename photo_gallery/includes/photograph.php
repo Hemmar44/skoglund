@@ -1,17 +1,109 @@
 <?php
-
 require_once 'database.php';
-
-class User {
+class  DatabaseObject {}
+class Photograph extends DatabaseObject {
     
-    protected static $table_name = "users";
-    protected static $db_fields = array("id", "username", "password", "first_name", "last_name");
+    protected static $table_name = "photographs";
+    protected static $db_fields = array("id", "filename", "type", "size", "caption");
     public $id;
-    public $username;
-    public $password;
-    public $first_name;
-    public $last_name;
+    public $filename;
+    public $type;
+    public $size;
+    public $caption;
+    
+    private $temp_path;
+    protected $upload_dir ="images";
+    public $errors = array();
 
+    protected $upload_errors = array(
+    0 =>"No errors.",
+    1 => "Larger than upload_max_filesize.",
+    2 =>"Larger than form MAX_FILE_SIZE.",
+    3 => "Partial upload.",
+    4 => "No file.",
+    6 => "No temporary directory",
+    7 => "Can't write to disk.",
+    8 => "File upload stopped by extension."
+);
+
+ //Pass in $_FILE([uploaded_file]) as an argument
+public function attach_file($file) {
+        //some error checking 
+        if(!$file or empty($file) or !is_array($file)){
+            //error: nothing uploaded or wrong argument usage
+            $this->errors[] = "No file was uploaded.";
+            return false;
+        }
+        elseif($file["error"] !=0){
+            //error: report what PHP says went wrong
+            $this->errors[] = $this->upload_errors[$file["error"]];
+            return false;
+        }
+        else {
+        $this-> temp_path = $file["tmp_name"];
+        $this-> filename = basename($file["name"]);
+        $this-> type =$file["type"];
+        $this-> size = $file["size"];
+        
+        return true;
+        }
+    
+    }
+    
+public function save() {
+    //A new record won't have an id yet.
+    if(isset($this->id)){
+            //just to update the caption
+        $this->update();
+    }
+    else{
+        //Make sure there are no errors
+        if(!empty($this->errors)) {return false;}
+        
+        //Make sure thecapiton is not too long for the DB
+        
+        if(strlen($this->caption)>255){
+            $this->errors[] = "The caption can only be 255 characters long";
+            return false;
+        }
+        
+        //Can't save without filename or temp location 
+        if(empty($this->filename) || empty($this->temp_path)){
+            $this->errors[] = "The file location was not available.";
+            return false;
+        }
+        
+        //Determine the target path
+        $target_path = "../{$this->upload_dir}/{$this->filename}";
+        
+        //Make sure a filr doesn't alredy exists in the target location
+        if(file_exists($target_path)){
+            $this->errors[] = "The file {$this->filename} already exists";
+            return false;
+        }
+        //Attempt to move the file
+        if(move_uploaded_file($this->temp_path, $target_path)){
+            //Succes
+            ////Save a corresponding entry to the database
+            if($this->create()){
+                //temp path deleted, because the file isn't there anymore
+                unset($this->temp_path);
+                return true;
+            }
+        }
+        else{
+            //file was not moved
+            $this->errors[] = "The file upload failed, possibly due to incorrect permisions"
+                    . "on the upload folder.";
+            return false;
+                    
+        }
+        
+        $this->create();
+    }
+}
+    
+    //Common database Methods
 public static function find_all() {
         //global $database;
        return self::find_by_sql("SELECT * FROM users");
@@ -103,10 +195,11 @@ protected function sanitized_attributes() {
     return $clean_attibutes;
 }
 
-public function save() {
-    //A new record won't have an id yet.
-    return isset($this->id)? $this->update() : $this->create();
-}
+//replaced with a custom save
+//public function save() {
+//    //A new record won't have an id yet.
+//    return isset($this->id)? $this->update() : $this->create();
+//}
 
 //create and update can as well be protected. We are using save() now.
 public function create() {
@@ -184,8 +277,5 @@ public function delete() {
     return ($database -> affected_rows() == 1)  ? true : false; 
     
 }
-    
 }
-
-
 ?>

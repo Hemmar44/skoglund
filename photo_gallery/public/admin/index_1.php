@@ -10,15 +10,17 @@ if(!$session->is_logged_in()) {redirect_to("login.php");}
 <?php
 
 $user = new User();
-$user ->username = "Agnieszka";
+$user ->username = "Ryssssiu";
 $user ->password = "niepodam";
-$user -> first_name = "Aga";
-$user -> last_name = "Hedrzak";
-$user -> create();
+$user -> first_name = "Rysiek";
+$user -> last_name = "Marciniak";
+//$user -> create();
+print_r($user -> attributes());
+
 
 /*
-$user = User::find_by_id(2);
-$user -> password = "costam";
+$user = User::find_by_id(3);
+$user -> password = "cotamjaktam";
 $user -> save();
 
 
