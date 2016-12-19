@@ -16,12 +16,16 @@ if(!$session->is_logged_in()) {redirect_to("login.php");}
     </head>
 
 <body>
+    
     <div id="header">
         <h1>Photo Gallery</h1>
     </div>
     <div id="main">
         <h2>Menu</h2>
+        <?php echo output_message($message); ?>
         <ul>
+            <li><a href="photo_upload.php">photo_upload</a></li>
+            <li><a href="list_photos.php">photo list</a></li>
             <li><a href="logfile.php">check logs</a></li>
             <li><a href="logout.php">logout</a></li>
         </ul>

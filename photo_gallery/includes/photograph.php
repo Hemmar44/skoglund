@@ -102,20 +102,65 @@ public function save() {
         $this->create();
     }
 }
+
+public function destroy() {
+    //First remove database entry
+    if($this -> delete()){
+       //then remove the file
+        $target_path = $this->image_path();
+        return unlink($target_path) ? true : false;
+    }
+    else{
+        //database delete failed
+        return false;
+    }
     
-    //Common database Methods
+}
+
+public function image_path() {
+    return "../public/{$this->upload_dir}/{$this->filename}";
+}
+
+public function admin_image_path() {
+    return "../{$this->upload_dir}/{$this->filename}";
+}
+
+public function size_as_text() {
+    if($this->size < 1024){
+        return "$this->size bytes";
+    }
+    elseif ($this->size <1048576) {
+        $size_kb = round($this->size/1024);
+        return "$size_kb KB";
+    }
+    else{
+        $size_mb = round($this->size/1048576, 1);
+        return "$size_mb MB";
+    }
+    
+}
+
+public function comments() {
+    return Comment::find_comments_on($this->id);
+}
+
+
+//Common database Methods
 public static function find_all() {
         //global $database;
-       return self::find_by_sql("SELECT * FROM users");
+       $table_name = self::$table_name;
+       return self::find_by_sql("SELECT * FROM $table_name");
         //$result_set = $database->query("SELECT * FROM users");
        // return $result_set;
     }
     
 public static function find_by_id($id=0){
         global $database;
-        $result_array = self::find_by_sql("SELECT * FROM users WHERE id={$id} LIMIT 1");
+        $table_name = self::$table_name;
+        $id = $database->escape_string($id);
+        $result_array = self::find_by_sql("SELECT * FROM $table_name WHERE id={$id} LIMIT 1");
         //$result_set = $database->query("SELECT * FROM users WHERE id={$id}");
-        return !empty($result_array) ? array_shift($result_array) : false;
+       return !empty($result_array) ? array_shift($result_array) : false;
         
     }
     

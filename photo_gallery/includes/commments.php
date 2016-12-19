@@ -1,17 +1,43 @@
 <?php
 
 require_once 'database.php';
+require_once 'photograph.php';
 
-class User {
+class Comment extends DatabaseObject {
     
-    protected static $table_name = "users";
-    protected static $db_fields = array("id", "username", "password", "first_name", "last_name");
+    protected static $table_name="comments";
+    protected static $db_fields=array("id", "photograph_id", "created", "author", "body");
+    
     public $id;
-    public $username;
-    public $password;
-    public $first_name;
-    public $last_name;
+    public $photograph_id;
+    public $created;
+    public $author;
+    public $body;
 
+
+    public static function make($photo_id, $author="Anonymous", $body=" "){
+        if(!empty($photo_id) && !empty($author) && !empty($body)){
+        $comment = new Comment();
+        $comment->photograph_id = (int)$photo_id;
+        $comment->created = strftime("%Y-%m-%d %H:%M:%S",  time());
+        $comment->author = $author;
+        $comment->body = $body;
+        return $comment;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public static function find_comments_on($photo_id=0){
+        global $database;
+        $photo_id = $database->escape_string($photo_id);
+        $table_name = self::$table_name;
+        $sql = "SELECT * FROM $table_name WHERE photograph_id=$photo_id ORDER BY created ASC";
+        return self::find_by_sql($sql);
+    }
+
+//Common database Methods
 public static function find_all() {
         //global $database;
        $table_name = self::$table_name;
@@ -22,9 +48,11 @@ public static function find_all() {
     
 public static function find_by_id($id=0){
         global $database;
-        $result_array = self::find_by_sql("SELECT * FROM users WHERE id={$id} LIMIT 1");
+        $table_name = self::$table_name;
+        $id = $database->escape_string($id);
+        $result_array = self::find_by_sql("SELECT * FROM $table_name WHERE id={$id} LIMIT 1");
         //$result_set = $database->query("SELECT * FROM users WHERE id={$id}");
-        return !empty($result_array) ? array_shift($result_array) : false;
+       return !empty($result_array) ? array_shift($result_array) : false;
         
     }
     
@@ -104,10 +132,11 @@ protected function sanitized_attributes() {
     return $clean_attibutes;
 }
 
-public function save() {
-    //A new record won't have an id yet.
-    return isset($this->id)? $this->update() : $this->create();
-}
+//replaced with a custom save
+//public function save() {
+//    //A new record won't have an id yet.
+//    return isset($this->id)? $this->update() : $this->create();
+//}
 
 //create and update can as well be protected. We are using save() now.
 public function create() {
@@ -185,8 +214,5 @@ public function delete() {
     return ($database -> affected_rows() == 1)  ? true : false; 
     
 }
-    
 }
-
-
 ?>
