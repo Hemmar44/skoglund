@@ -1,22 +1,16 @@
-<!DOCTYPE html>
+<?php
+//multiple adresses after comma;
+$to = "marcinhe@interia.pl";
+$subject = "Inna wiadomość" ;//nie działa
+$message = "Anything in old browser we should in old email some mistakes if it's longer than 70 words.<h1>BIG</h1>";
+$from = "Marcin Hedrzak <hedrzak.marcin@gmail.com>";
+$reply = "mapsonik@interia.pl";
+$headers = "From: {$from}\n";
+$headers .= "Reply-To: {$reply}\n ";
+$headers .= "Cc: {$reply}\n";
+$headers .= "Bcc: {$reply}\n";
 
-<html>
-    <head>
-        <title>variable variables</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-       <?php
-       
-       $a = "hello";
-       $hello = "hello everyone";
-       echo $a."<br/>";
-       echo $hello ."<br/>";
-       
-       echo $$a."<br/>";
-       
+echo mail($to, $subject, $message, $headers) ? "udało się" : "nie udało się";
        
        ?>
-    </body>
-</html>
+   

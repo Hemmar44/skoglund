@@ -25,7 +25,8 @@ if(isset($_POST["submit"])){
     if($new_comment && $new_comment->create()){
         //comment saved
         //no messafe needed; seeing the comment is proof enough
-        
+        //send email
+        $new_comment->try_to_send_notification();
         //if the page is reloaded, the form will try to resubmit the comment.So redirect instead:
         redirect_to("photo.php?id={$photo->id}");
     }

@@ -173,6 +173,15 @@ public static function find_by_sql($sql=""){
         }
        return $object_array;
     }
+    
+public static function count_all() {
+    global $database;
+    $table_name = self::$table_name;
+    $sql = "SELECT COUNT(*) FROM $table_name";
+    $result_set = $database->query($sql);//returns a number inside a fiel inside a row;
+    $row = $database->fetch_array($result_set);
+    return array_shift($row);
+}
 
 public static function authenticate($username="", $password=""){
     global $database;

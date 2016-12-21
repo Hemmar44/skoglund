@@ -22,7 +22,7 @@ $comments = $photo->comments();
 ?>
 
 <h2>Comments on <?php echo $photo->filename;?></h2>
-
+<?php echo output_message($message); ?>
 <div id="comments">
     <?php foreach($comments as $comment):?>
     <div class="comment" style="margin-bottom: 2em;">
@@ -33,7 +33,7 @@ $comments = $photo->comments();
             <?php echo strip_tags($comment->body, "<strong><em><p>"); ?>
         </div>
         <div class="meta-info" style="font-size: 0.8em;">
-            <a href="delete_comment.php?id-<=<?php echo $comment->id; ?>">Delete Comment </a>
+            <a href="delete_comment.php?id=<?php echo $comment->id; ?>">Delete Comment </a>
         </div>
     </div>
     <?php    endforeach; ?>

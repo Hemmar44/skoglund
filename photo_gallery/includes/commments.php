@@ -36,6 +36,36 @@ class Comment extends DatabaseObject {
         $sql = "SELECT * FROM $table_name WHERE photograph_id=$photo_id ORDER BY created ASC";
         return self::find_by_sql($sql);
     }
+    
+    public function try_to_send_notification(){
+        
+        $mail = new PHPMailer();
+
+        $mail->IsSMTP();
+        $mail->Host = "smtp.gmail.com";
+        $mail->Port = 587;
+        $mail->SMTPAuth = true;
+        $mail->Username = "hedrzak.marcin@gmail.com";
+        $mail->Password = "maps2202";
+      
+
+        $mail -> FromName = "Photo Gallery";
+        $mail -> From = "hedrzak.marcin@gmail.com";
+        $mail -> AddAddress("marcinhe@interia.pl", "Photo Gallery Admin");
+        $mail -> Subject ="New Photo Gallery Comment";
+        $created = datetime_to_text($this->created);
+        $mail -> Body = <<<EMAILBODY
+A new comment has been received in Photo Gallery
+    
+At {$created}, {$this->author} wrote:
+
+{$this->body}
+                
+EMAILBODY;
+        
+        $result = $mail->Send();
+        return $result;
+    }
 
 //Common database Methods
 public static function find_all() {
@@ -65,6 +95,15 @@ public static function find_by_sql($sql=""){
         }
        return $object_array;
     }
+    
+public static function count_all() {
+    global $database;
+    $table_name = self::$table_name;
+    $sql = "SELECT COUNT(*) FROM $table_name";
+    $result_set = $database->query($sql);//returns a number inside a fiel inside a row;
+    $row = $database->fetch_array($result_set);
+    return array_shift($row);
+}
 
 public static function authenticate($username="", $password=""){
     global $database;
